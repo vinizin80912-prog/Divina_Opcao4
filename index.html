@@ -1,0 +1,397 @@
+<!doctype html><html lang="pt-br"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Divina Opção • Caixa</title>
+<meta name="theme-color" content="#0b0b0b">
+<style>
+:root{--bg:#0b0b0b;--card:#121212;--card2:#0f0f0f;--b:#242424;--txt:#fff;--mut:#a9a9a9;--ok:#62ff93;--bad:#ff6b6b;--acc:#ffffff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:Arial}
+.wrap{max-width:980px;margin:0 auto;padding:14px}
+.hdr{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{width:42px;height:42px;border-radius:14px;border:1px solid var(--b);background:#070707;display:flex;align-items:center;justify-content:center;font-weight:900}
+.title{font-weight:900}.sub{color:var(--mut);font-size:12px;margin-top:2px}
+.card{background:var(--card);border:1px solid var(--b);border-radius:18px;padding:12px;margin:10px 0}
+.card2{background:var(--card2)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.grid{display:grid;gap:10px}
+@media(min-width:900px){.g2{grid-template-columns:1.15fr .85fr}}
+.btn{border:0;border-radius:14px;padding:11px 12px;font-weight:900;cursor:pointer}
+.pri{background:var(--acc);color:#111}
+.sec{background:#171717;color:#fff;border:1px solid #333}
+.bad{background:#331313;color:#fff;border:1px solid #7a2b2b}
+.chip{border:1px solid #2e2e2e;background:#101010;color:#ddd;border-radius:999px;padding:9px 12px;font-weight:900;cursor:pointer}
+.chip.on{background:#fff;color:#111;border-color:#fff}
+input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:14px;border:1px solid #333;background:#070707;color:#fff;font-size:15px}
+textarea{min-height:90px;resize:vertical}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #2d2d2d;background:#0b0b0b;color:#ddd;font-size:12px}
+.kpi{display:flex;gap:10px;flex-wrap:wrap}
+.kpi .i{flex:1;min-width:160px;background:#0c0c0c;border:1px solid var(--b);border-radius:16px;padding:12px}
+.kpi .t{color:var(--mut);font-size:12px}
+.kpi .v{font-weight:900;margin-top:6px;font-size:18px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.div{height:1px;background:#232323;margin:10px 0}
+.tabs{display:flex;gap:10px}
+.tab{flex:1;text-align:center;padding:10px;border-radius:14px;border:1px solid #2e2e2e;background:#101010;color:#ddd;font-weight:900;cursor:pointer}
+.tab.on{background:#fff;color:#111;border-color:#fff}
+.month{display:flex;align-items:center;gap:10px}
+.month .m{flex:1;text-align:center;font-weight:900}
+canvas{width:100%;height:260px;background:#070707;border:1px solid var(--b);border-radius:18px;display:block}
+.small{color:var(--mut);font-size:12px;line-height:1.35}
+.item{background:#0c0c0c;border:1px solid var(--b);border-radius:16px;padding:12px;margin:10px 0}
+.item .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.item .val{font-weight:900;font-size:18px}
+.item .meta{color:var(--mut);font-size:12px;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#111;border:1px solid #2a2a2a;color:#ddd;padding:10px 12px;border-radius:14px;max-width:92vw;display:none}
+kbd{background:#0b0b0b;border:1px solid #2b2b2b;border-radius:8px;padding:2px 6px;font-size:12px;color:#ddd}
+</style></head><body><div class="wrap">
+
+<div class="hdr">
+  <div class="brand">
+    <div class="logo">DO</div>
+    <div>
+      <div class="title">Divina Opção • Caixa</div>
+      <div class="sub">Vendas, gastos e lucro. Só isso.</div>
+    </div>
+  </div>
+  <button class="btn sec" onclick="alert(clos())">Fechamento</button>
+</div>
+
+<div class="card month">
+  <button class="btn sec" onclick="mm(-1)">◀</button>
+  <div class="m" id="mt">----</div>
+  <button class="btn sec" onclick="mm(1)">▶</button>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <div class="tabs">
+      <div class="tab on" id="tabAdd" onclick="showTab('add')">Adicionar</div>
+      <div class="tab" id="tabList" onclick="showTab('list')">Histórico</div>
+    </div>
+
+    <!-- ADD -->
+    <div id="paneAdd">
+      <div class="div"></div>
+
+      <div class="row">
+        <button class="chip on" id="chipVenda" onclick="setTipo('Venda')">Venda</button>
+        <button class="chip" id="chipGasto" onclick="setTipo('Gasto')">Gasto</button>
+        <input id="d" type="date">
+      </div>
+
+      <input id="v" inputmode="decimal" type="number" step=".01" placeholder="Valor">
+
+      <div class="row">
+        <button class="btn sec" onclick="fillVal(50)">+50</button>
+        <button class="btn sec" onclick="fillVal(100)">+100</button>
+        <button class="btn sec" onclick="fillVal(200)">+200</button>
+        <button class="btn sec" onclick="fillVal(500)">+500</button>
+      </div>
+
+      <div class="row">
+        <select id="cat">
+          <option value="">Categoria (opcional)</option>
+          <option>Roupas</option><option>Bolsas</option><option>Relógios</option><option>Outros</option>
+        </select>
+        <input id="x" placeholder="Obs (opcional)">
+      </div>
+
+      <div class="row">
+        <button class="btn pri" onclick="save()">Salvar</button>
+        <button class="btn sec" onclick="clr()">Limpar</button>
+      </div>
+
+      <details style="margin-top:10px">
+        <summary class="pill">Meta & Backup</summary>
+        <div class="row">
+          <input id="meta" type="number" step=".01" placeholder="Meta de lucro do mês">
+          <button class="btn sec" onclick="setMeta()">Salvar</button>
+        </div>
+        <div class="row">
+          <button class="btn sec" onclick="exp()">Export JSON</button>
+          <button class="btn sec" onclick="imp()">Import JSON</button>
+        </div>
+        <textarea id="bk" placeholder="Backup JSON aqui (copiar/colar)"></textarea>
+        <button class="btn bad" onclick="wipe()">Apagar TUDO</button>
+      </details>
+    </div>
+
+    <!-- LIST -->
+    <div id="paneList" style="display:none">
+      <div class="div"></div>
+      <div class="row">
+        <select id="ft" onchange="render()">
+          <option value="TODOS">Todos</option><option>Venda</option><option>Gasto</option>
+        </select>
+        <input id="q" placeholder="Buscar..." oninput="render()">
+      </div>
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <div class="card card2">
+    <div class="kpi">
+      <div class="i">
+        <div class="t">Hoje</div>
+        <div class="v" id="kHoje">R$ 0,00</div>
+        <div class="small" id="kHoje2">—</div>
+      </div>
+      <div class="i">
+        <div class="t">Mês</div>
+        <div class="v" id="kMes">R$ 0,00</div>
+        <div class="small" id="kMes2">—</div>
+      </div>
+      <div class="i">
+        <div class="t">Margem</div>
+        <div class="v" id="kMargem">0%</div>
+        <div class="small">Lucro ÷ Vendas</div>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div id="metaBox" class="small"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <h3 style="margin:0">Gráfico do mês</h3>
+    <span class="pill" id="gInfo">Toque no gráfico</span>
+  </div>
+  <div class="small">Vendas (claro), Gastos (vermelho), Lucro/Prejuízo (linha fina).</div>
+  <div class="div"></div>
+  <canvas id="c"></canvas>
+  <div id="tip" class="small" style="margin-top:8px;min-height:18px"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const K="do_caixa_mom_v1", KM="do_meta_mom_v1";
+let R=load(K,[]), S=YM(new Date()), tipo="Venda";
+let chart={};
+
+function D(i){return document.getElementById(i)}
+function load(k,def){try{return JSON.parse(localStorage.getItem(k)||"null")??def}catch{return def}}
+function saveStore(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function P2(n){return String(n).padStart(2,"0")}
+function YM(d){return d.getFullYear()+"-"+P2(d.getMonth()+1)}
+function TD(){let d=new Date();return d.getFullYear()+"-"+P2(d.getMonth()+1)+"-"+P2(d.getDate())}
+function ML(s){let[y,m]=s.split("-");let n=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];return n[+m-1]+" "+y}
+function BRL(v){return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function BRD(s){let[y,m,d]=s.split("-");return d+"/"+m+"/"+y}
+function ID(){return "i"+Math.random().toString(16).slice(2)+Date.now().toString(16)}
+function LD(y,m1){return new Date(y,m1,0).getDate()}
+function PM(s,delta){let[y,m]=s.split("-").map(Number),d=new Date(y,m-1+delta,1);return YM(d)}
+function toast(msg){let t=D("toast");t.textContent=msg;t.style.display="block";clearTimeout(t._tm);t._tm=setTimeout(()=>t.style.display="none",1500)}
+
+D("d").value=TD();
+D("mt").textContent=ML(S);
+loadMeta();
+
+function showTab(w){
+  D("tabAdd").classList.toggle("on",w==="add");
+  D("tabList").classList.toggle("on",w==="list");
+  D("paneAdd").style.display=w==="add"?"block":"none";
+  D("paneList").style.display=w==="list"?"block":"none";
+  if(w==="list") render();
+}
+
+function setTipo(t){
+  tipo=t;
+  D("chipVenda").classList.toggle("on",t==="Venda");
+  D("chipGasto").classList.toggle("on",t==="Gasto");
+}
+
+function mm(d){S=PM(S,d);D("mt").textContent=ML(S);loadMeta();renderAll()}
+function clr(){setTipo("Venda");D("v").value="";D("x").value="";D("cat").value=""}
+function fillVal(add){
+  let cur=+String(D("v").value||"0").replace(",",".");
+  D("v").value=(cur+add).toFixed(2);
+}
+
+function save(){
+  let data=D("d").value, val=+String(D("v").value||"").replace(",",".");
+  if(!data||!val||val<=0) return alert("Preencha data e valor.");
+  let m=data.slice(0,7);
+  let cat=D("cat").value||"";
+  let desc=(D("x").value||"").trim();
+  let label = cat ? (desc?`${cat} • ${desc}`:cat) : desc;
+
+  R.push({id:ID(),tipo,data,val,desc:label,m,at:Date.now()});
+  saveStore(K,R);
+  toast("Salvo ✅");
+  clr();
+  S=m; D("mt").textContent=ML(S); loadMeta();
+  renderAll();
+}
+
+function del(id){
+  if(!confirm("Apagar este lançamento?")) return;
+  R=R.filter(r=>r.id!==id); saveStore(K,R); renderAll();
+}
+
+function wipe(){
+  if(!confirm("Apagar TUDO mesmo?")) return;
+  R=[]; saveStore(K,R); toast("Apagado."); renderAll();
+}
+
+function T(month){
+  let v=0,g=0,c=0,days=new Set();
+  for(let r of R) if(r.m===month){
+    c++; days.add(r.data);
+    r.tipo==="Venda"?v+=r.val:g+=r.val;
+  }
+  return {v,g,l:v-g,c,activeDays:days.size}
+}
+function Tday(){
+  let v=0,g=0,d=TD();
+  for(let r of R) if(r.data===d){ r.tipo==="Venda"?v+=r.val:g+=r.val }
+  return {v,g,l:v-g}
+}
+function clos(){
+  let t=T(S);
+  return `Fechamento ${ML(S)}\nLanç.: ${t.c}\nVendas: ${BRL(t.v)}\nGastos: ${BRL(t.g)}\nLucro: ${BRL(t.l)}`
+}
+
+function loadMeta(){let M=load(KM,{}); D("meta").value=(M[S]??"")}
+function setMeta(){
+  let M=load(KM,{}), v=+String(D("meta").value||"").replace(",",".");
+  if(!v||v<=0){ delete M[S]; saveStore(KM,M); toast("Meta removida"); loadMeta(); renderAll(); return; }
+  M[S]=v; saveStore(KM,M); toast("Meta salva"); renderAll();
+}
+function exp(){ D("bk").value=JSON.stringify({at:new Date().toISOString(),R},null,2); toast("Export pronto"); }
+function imp(){
+  let s=(D("bk").value||"").trim(); if(!s) return alert("Cole o JSON.");
+  try{ let j=JSON.parse(s); if(!j.R||!Array.isArray(j.R)) return alert("Backup inválido.");
+    R=j.R; saveStore(K,R); toast("Importado ✅"); renderAll();
+  }catch{ alert("JSON inválido."); }
+}
+
+function proj(){
+  let [Y,M]=S.split("-").map(Number),days=LD(Y,M),today=new Date();
+  let cur=(YM(today)===S)? today.getDate():days;
+  let tm=T(S);
+  let avgLucro=cur?tm.l/cur:0, avgFat=cur?tm.v/cur:0;
+  return {days,cur,avgLucro,avgFat,estLucro:avgLucro*days,estFat:avgFat*days}
+}
+function byDay(month){
+  let [Y,M]=month.split("-").map(Number),days=LD(Y,M);
+  let a=Array.from({length:days},(_,i)=>({day:i+1,v:0,g:0,l:0,has:false}));
+  for(let r of R) if(r.m===month){
+    let i=+r.data.slice(8,10)-1; if(!a[i]) continue;
+    a[i].has=true; r.tipo==="Venda"?a[i].v+=r.val:a[i].g+=r.val; a[i].l=a[i].v-a[i].g;
+  }
+  return a
+}
+
+function draw(){
+  const cv=D("c"), ctx=cv.getContext("2d");
+  const rect=cv.getBoundingClientRect();
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  cv.width=Math.floor(rect.width*dpr);
+  cv.height=Math.floor(260*dpr);
+
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.save(); ctx.scale(dpr,dpr);
+  const w=rect.width, h=260;
+  const padL=54,padR=12,padT=12,padB=34;
+  const gx=padL,gy=padT,gw=w-padL-padR,gh=h-padT-padB;
+
+  const a=byDay(S), days=a.length;
+  const max=Math.max(1,...a.map(x=>x.v),...a.map(x=>x.g),...a.map(x=>Math.abs(x.l)));
+
+  ctx.strokeStyle="#1f1f1f";
+  for(let i=0;i<=4;i++){let y=gy+(gh*i/4);ctx.beginPath();ctx.moveTo(gx,y);ctx.lineTo(gx+gw,y);ctx.stroke()}
+  ctx.strokeStyle="#2b2b2b";
+  ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+
+  ctx.fillStyle="#8b8b8b";ctx.font="12px Arial";
+  for(let i=0;i<=4;i++){let val=max*(1-i/4),y=gy+(gh*i/4);ctx.fillText(BRL(val).replace("R$","").trim(),6,y+4)}
+
+  const step=gw/days;
+  for(let i=0;i<days;i++){
+    const x=gx+i*step, v=a[i].v, g=a[i].g, l=a[i].l;
+    const vh=(v/max)*gh, ghh=(g/max)*gh, lh=(Math.abs(l)/max)*gh;
+    ctx.fillStyle="#ffffff";ctx.fillRect(x+step*0.10, gy+gh-vh, step*0.28, vh);
+    ctx.fillStyle="#7a2b2b";ctx.fillRect(x+step*0.45, gy+gh-ghh, step*0.28, ghh);
+    ctx.fillStyle=l>=0?"#2f8f4f":"#7a2b2b";ctx.fillRect(x+step*0.80, gy+gh-lh, step*0.08, lh);
+  }
+
+  ctx.fillStyle="#8b8b8b";ctx.font="12px Arial";
+  for(let d of [1,8,15,22,29]){if(d>days)continue;let x=gx+(d-1)*step;ctx.fillText(String(d),x+2,gy+gh+22)}
+
+  ctx.restore();
+  chart={gx,gw,days,step,rect};
+}
+function pickDay(clientX){
+  const {gx,gw,days,step,rect}=chart;
+  if(!rect) return null;
+  const x=clientX-rect.left;
+  if(x<gx||x>(gx+gw)) return null;
+  return Math.max(0,Math.min(days-1,Math.floor((x-gx)/step)));
+}
+function bindChart(){
+  const cv=D("c");
+  function tap(ev){
+    const p=(ev.touches?ev.touches[0].clientX:ev.clientX);
+    const idx=pickDay(p); if(idx==null) return;
+    const a=byDay(S)[idx];
+    D("tip").textContent=`${P2(a.day)}/${S.slice(5,7)}: V ${BRL(a.v)} • G ${BRL(a.g)} • L ${BRL(a.l)}`;
+    D("gInfo").textContent=`Dia ${P2(a.day)}`;
+  }
+  cv.addEventListener("click",tap,{passive:true});
+  cv.addEventListener("touchstart",tap,{passive:true});
+  window.addEventListener("resize",()=>draw(),{passive:true});
+}
+
+function render(){
+  let f=D("ft").value, q=(D("q").value||"").toLowerCase().trim();
+  let rows=R.filter(r=>r.m===S).sort((a,b)=>(b.data.localeCompare(a.data))||(b.at-a.at));
+  if(f!=="TODOS") rows=rows.filter(r=>r.tipo===f);
+  if(q) rows=rows.filter(r=>((r.desc||"").toLowerCase().includes(q)));
+
+  D("list").innerHTML=rows.length?rows.map(r=>`
+    <div class="item">
+      <div class="top">
+        <span class="pill">${r.tipo}</span>
+        <button class="btn bad" onclick="del('${r.id}')">Apagar</button>
+      </div>
+      <div class="val">${BRL(r.val)}</div>
+      <div class="meta">${BRD(r.data)}${r.desc?` • ${r.desc}`:""}</div>
+    </div>
+  `).join(""):`<div class="small">Nada pra mostrar neste mês.</div>`;
+}
+
+function renderAll(){
+  const td=Tday(), tm=T(S);
+  D("kHoje").textContent=BRL(td.l); D("kHoje").className="v "+(td.l<0?"neg":"pos");
+  D("kHoje2").textContent=`V ${BRL(td.v)} • G ${BRL(td.g)}`;
+
+  D("kMes").textContent=BRL(tm.l); D("kMes").className="v "+(tm.l<0?"neg":"pos");
+  D("kMes2").textContent=`V ${BRL(tm.v)} • G ${BRL(tm.g)} • ${tm.activeDays} dias`;
+
+  const margem=tm.v>0?(tm.l/tm.v*100):0;
+  D("kMargem").textContent=margem.toFixed(1)+"%";
+  D("kMargem").className="v "+(margem<0?"neg":"pos");
+
+  const M=load(KM,{}), meta=+M[S]||0, p=proj();
+  const pct=meta?Math.max(0,Math.min(100,(tm.l/meta)*100)):0;
+  const margemEst=p.estFat>0?(p.estLucro/p.estFat*100):0;
+
+  D("metaBox").innerHTML=
+    `Meta de lucro: <b>${meta?BRL(meta):"—"}</b><br>`+
+    `Projeção do mês: <b>${BRL(p.estLucro)}</b> (média ${BRL(p.avgLucro)}/dia)<br>`+
+    `Faturamento estimado: <b>${BRL(p.estFat)}</b> • Margem est.: <b>${margemEst.toFixed(1)}%</b><br>`+
+    (meta?`<div class="div"></div><div class="small">Progresso da meta: <b>${pct.toFixed(0)}%</b></div>
+      <div style="height:10px;border:1px solid #333;border-radius:999px;overflow:hidden;margin-top:6px">
+        <div style="height:100%;background:#fff;width:${pct}%"></div>
+      </div>`:`<div class="div"></div><div class="small">Defina uma meta para ver o progresso.</div>`);
+
+  draw();
+  if(D("paneList").style.display!=="none") render();
+}
+
+bindChart();
+renderAll();
+</script></div></body></html>
